@@ -2,6 +2,8 @@ import streamlit as st
 import pickle
 import pandas as pd
 import requests
+import bz2
+import os
 
 # TMDB API key
 TMDB_API_KEY = "d292716455cac395c3a09fe1de860315"
@@ -79,7 +81,14 @@ def recommend(movie):
 # Load data
 movies_dict = pickle.load(open('movie_dict.pkl', 'rb'))
 movies = pd.DataFrame(movies_dict)
-similarity = pickle.load(open('similarity.pkl', 'rb'))
+
+# Fix filename if needed
+if os.path.exists('similarity.pkl.gz2'):
+    os.rename('similarity.pkl.gz2', 'similarity.pkl.bz2')
+
+# Load compressed similarity matrix
+with bz2.BZ2File('similarity.pkl.bz2', 'rb') as f:
+    similarity = pickle.load(f)
 
 # App UI
 st.title('🎬 Movie Recommender System')
